@@ -33,7 +33,11 @@ export default function MinePass({ worker, onClose }: MinePassProps) {
 
   return (
     <div className="modal modal-blur fade show d-block">
-      <div className="modal-backdrop fade show" onClick={onClose}></div>
+      {/* Light backdrop instead of dark */}
+      <div
+        className="modal-backdrop fade show opacity-25"
+        onClick={onClose}
+      ></div>
       <div className="modal-dialog modal-sm modal-dialog-centered">
         <div className="modal-content">
           <div className="modal-header">
@@ -58,10 +62,23 @@ export default function MinePass({ worker, onClose }: MinePassProps) {
             <span className={`badge ${statusClass} mb-4`}>
               {worker.status.toUpperCase()}
             </span>
-            <div className="card">
-              <div className="card-body p-3">
-                <QRCode value={JSON.stringify(qrData)} size={160} />
+
+            {/* Bright white background for QR code */}
+            <div className="card bg-white">
+              <div className="card-body p-4">
+                <QRCode
+                  value={JSON.stringify(qrData)}
+                  size={160}
+                  bgColor="#FFFFFF"
+                  fgColor="#000000"
+                />
               </div>
+            </div>
+
+            <div className="mt-3">
+              <small className="text-muted">
+                Scan to verify worker credentials
+              </small>
             </div>
           </div>
           <div className="modal-footer">
