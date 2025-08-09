@@ -12,8 +12,10 @@
     "@tabler/core": "^1.4.0",
     "@tabler/icons": "^3.34.1",
     "next": "15.4.6",
+    "qr-scanner": "^1.4.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-qr-code": "^2.0.18"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
