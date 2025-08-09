@@ -541,6 +541,75 @@ class ApiClient {
     const query = params.toString() ? `?${params}` : '';
     return this.request(`/skills/matrix${query}`);
   }
+
+  // Integration APIs
+  async getIntegrationHealth() {
+    return this.request('/integrations/health');
+  }
+
+  async refreshIntegrationHealth() {
+    return this.request('/integrations/health', {
+      method: 'POST',
+    });
+  }
+
+  async syncWorkerToGallagher(workerId: string) {
+    return this.request('/integrations/sync', {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'worker-to-gallagher',
+        workerId,
+      }),
+    });
+  }
+
+  async syncWorkerFromSAP(employeeId: string) {
+    return this.request('/integrations/sync', {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'worker-from-sap',
+        employeeId,
+      }),
+    });
+  }
+
+  async syncAllWorkersToPowerBI() {
+    return this.request('/integrations/sync', {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'all-workers-to-powerbi',
+      }),
+    });
+  }
+
+  async performFullSync() {
+    return this.request('/integrations/sync', {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'full-sync',
+      }),
+    });
+  }
+
+  async getGallagherEvents(filters?: {
+    employeeId?: string;
+    location?: string;
+    fromDate?: string;
+    toDate?: string;
+    result?: string;
+    limit?: number;
+  }) {
+    const params = new URLSearchParams();
+    if (filters?.employeeId) params.append('employeeId', filters.employeeId);
+    if (filters?.location) params.append('location', filters.location);
+    if (filters?.fromDate) params.append('fromDate', filters.fromDate);
+    if (filters?.toDate) params.append('toDate', filters.toDate);
+    if (filters?.result) params.append('result', filters.result);
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+    
+    const query = params.toString() ? `?${params}` : '';
+    return this.request(`/integrations/gallagher/events${query}`);
+  }
 }
 
 export const apiClient = new ApiClient();
