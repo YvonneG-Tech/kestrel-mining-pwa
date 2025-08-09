@@ -49,20 +49,6 @@ export default function WorkerCard({ worker }: { worker: Worker }) {
               <span className={`badge ${statusClass}`}>{worker.status}</span>
             </div>
 
-            {/* Document Summary */}
-            {worker.documents && worker.documents.length > 0 && (
-              <div className="mb-3">
-                <div className="d-flex align-items-center text-muted small">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-sm me-1" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M14 3v4a1 1 0 0 0 1 1h4"/>
-                    <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/>
-                  </svg>
-                  <span>{worker.documents.length} document{worker.documents.length !== 1 ? 's' : ''}</span>
-                </div>
-              </div>
-            )}
-
             <div className="btn-list">
               <button
                 className="btn btn-sm btn-outline-primary"
@@ -76,19 +62,6 @@ export default function WorkerCard({ worker }: { worker: Worker }) {
               >
                 QR Pass
               </button>
-              {worker.documents && worker.documents.length > 0 && (
-                <a
-                  href={`/documents?worker=${worker.id}`}
-                  className="btn btn-sm btn-outline-secondary"
-                  title="View documents"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-sm" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M14 3v4a1 1 0 0 0 1 1h4"/>
-                    <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/>
-                  </svg>
-                </a>
-              )}
             </div>
 
             {isExpanded && (

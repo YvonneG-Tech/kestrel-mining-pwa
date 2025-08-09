@@ -43,8 +43,9 @@ model Worker {
   lastSeen   DateTime?
   
   // Relations
-  documents   Document[]
-  scanHistory ScanHistory[]
+  documents     Document[]
+  scanHistory   ScanHistory[]
+  equipmentUsage EquipmentUsage[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -113,4 +114,281 @@ enum ScanStatus {
   SUCCESS
   ERROR
   NOT_FOUND
+}
+
+// Contractor model
+model Contractor {
+  id          String            @id @default(cuid())
+  companyName String
+  abn         String?           @unique
+  contactName String
+  email       String
+  phone       String
+  address     String?
+  status      ContractorStatus  @default(ACTIVE)
+  
+  // Rates and financial
+  hourlyRate      Float?
+  dailyRate       Float?
+  emergencyRate   Float?
+  
+  // Skills and certifications
+  skills          String[]
+  certifications  ContractorCertification[]
+  
+  // Availability
+  isAvailable     Boolean          @default(true)
+  availableFrom   DateTime?
+  availableTo     DateTime?
+  maxHoursPerWeek Int?
+  
+  // Relations
+  assignments     ContractorAssignment[]
+  equipmentUsage  EquipmentUsage[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contractors")
+}
+
+enum ContractorStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+  SUSPENDED
+  BLACKLISTED
+}
+
+// Contractor certifications
+model ContractorCertification {
+  id           String   @id @default(cuid())
+  contractorId String
+  contractor   Contractor @relation(fields: [contractorId], references: [id])
+  
+  name         String
+  issuer       String
+  number       String?
+  issuedDate   DateTime
+  expiryDate   DateTime?
+  status       DocumentStatus @default(VALID)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contractor_certifications")
+}
+
+// Contractor assignments
+model ContractorAssignment {
+  id           String   @id @default(cuid())
+  contractorId String
+  contractor   Contractor @relation(fields: [contractorId], references: [id])
+  
+  projectName  String
+  description  String?
+  startDate    DateTime
+  endDate      DateTime?
+  status       AssignmentStatus @default(ACTIVE)
+  
+  // Rate overrides for this assignment
+  agreedRate   Float?
+  rateType     RateType @default(HOURLY)
+  
+  // Hours tracking
+  hoursWorked  Float    @default(0)
+  totalCost    Float    @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contractor_assignments")
+}
+
+enum AssignmentStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  PAUSED
+}
+
+enum RateType {
+  HOURLY
+  DAILY
+  FIXED
+}
+
+// Equipment model
+model Equipment {
+  id             String          @id @default(cuid())
+  name           String
+  type           EquipmentType
+  model          String?
+  serialNumber   String?         @unique
+  registrationId String?         @unique
+  status         EquipmentStatus @default(AVAILABLE)
+  
+  // Technical details
+  specifications Json?
+  capacity       String?
+  fuelType       String?
+  
+  // Ownership and costs
+  isOwned        Boolean         @default(true)
+  purchaseDate   DateTime?
+  purchasePrice  Float?
+  currentValue   Float?
+  dailyRate      Float?
+  
+  // Location and availability
+  currentLocation String?
+  isAvailable     Boolean         @default(true)
+  
+  // Maintenance
+  lastServiceDate    DateTime?
+  nextServiceDate    DateTime?
+  serviceIntervalKm  Int?
+  serviceIntervalHours Int?
+  currentKm          Int?
+  currentHours       Float?
+  
+  // Relations
+  usage              EquipmentUsage[]
+  maintenanceRecords EquipmentMaintenance[]
+  assignments        EquipmentAssignment[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("equipment")
+}
+
+enum EquipmentType {
+  EXCAVATOR
+  BULLDOZER
+  DUMP_TRUCK
+  LOADER
+  CRANE
+  GENERATOR
+  COMPRESSOR
+  DRILL_RIG
+  GRADER
+  WATER_TRUCK
+  FUEL_TRUCK
+  LIGHT_VEHICLE
+  HEAVY_VEHICLE
+  OTHER
+}
+
+enum EquipmentStatus {
+  AVAILABLE
+  IN_USE
+  MAINTENANCE
+  OUT_OF_SERVICE
+  DISPOSED
+}
+
+// Equipment usage tracking
+model EquipmentUsage {
+  id          String   @id @default(cuid())
+  equipmentId String
+  equipment   Equipment @relation(fields: [equipmentId], references: [id])
+  
+  // Operator details
+  operatorType OperatorType
+  workerId     String?
+  worker       Worker?   @relation(fields: [workerId], references: [id])
+  contractorId String?
+  contractor   Contractor? @relation(fields: [contractorId], references: [id])
+  
+  // Usage details
+  startTime    DateTime
+  endTime      DateTime?
+  location     String?
+  purpose      String?
+  
+  // Tracking
+  startKm      Int?
+  endKm        Int?
+  startHours   Float?
+  endHours     Float?
+  fuelUsed     Float?
+  
+  notes        String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("equipment_usage")
+}
+
+enum OperatorType {
+  EMPLOYEE
+  CONTRACTOR
+}
+
+// Equipment maintenance
+model EquipmentMaintenance {
+  id          String           @id @default(cuid())
+  equipmentId String
+  equipment   Equipment        @relation(fields: [equipmentId], references: [id])
+  
+  type        MaintenanceType
+  description String
+  scheduledDate DateTime?
+  completedDate DateTime?
+  status      MaintenanceStatus @default(SCHEDULED)
+  
+  // Cost tracking
+  cost        Float?
+  supplier    String?
+  
+  // Details
+  kmReading   Int?
+  hoursReading Float?
+  partsUsed   Json?
+  notes       String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("equipment_maintenance")
+}
+
+enum MaintenanceType {
+  ROUTINE_SERVICE
+  REPAIR
+  INSPECTION
+  CALIBRATION
+  EMERGENCY
+}
+
+enum MaintenanceStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  OVERDUE
+}
+
+// Equipment assignments to projects
+model EquipmentAssignment {
+  id          String   @id @default(cuid())
+  equipmentId String
+  equipment   Equipment @relation(fields: [equipmentId], references: [id])
+  
+  projectName String
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  status      AssignmentStatus @default(ACTIVE)
+  
+  // Cost tracking
+  agreedRate  Float?
+  totalCost   Float    @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("equipment_assignments")
 }
