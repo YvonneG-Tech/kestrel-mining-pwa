@@ -8,6 +8,7 @@ export default function Navigation() {
   const navItems = [
     { href: "/", label: "Dashboard", icon: "dashboard" },
     { href: "/workers", label: "Workers", icon: "users" },
+    { href: "/documents", label: "Documents", icon: "files" },
   ];
 
   return (
@@ -82,6 +83,27 @@ export default function Navigation() {
                       <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
                       <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                       <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />
+                    </svg>
+                  )}
+                  {item.icon === "files" && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="icon"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      strokeWidth="2"
+                      stroke="currentColor"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+                      <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+                      <path d="M9 9l1 0" />
+                      <path d="M9 13l6 0" />
+                      <path d="M9 17l6 0" />
                     </svg>
                   )}
                 </span>
