@@ -1,5 +1,14 @@
 "use client";
 import { useState } from "react";
+import FileUpload from "./FileUpload";
+
+interface WorkerDocument {
+  id: string;
+  name: string;
+  type: "id" | "certification" | "training" | "medical" | "other";
+  file: File;
+  uploadedAt: string;
+}
 
 interface Worker {
   id: string;
@@ -8,6 +17,7 @@ interface Worker {
   status: "active" | "inactive" | "pending";
   role: string;
   lastSeen: string;
+  documents?: WorkerDocument[];
 }
 
 interface AddWorkerFormProps {
@@ -27,6 +37,8 @@ export default function AddWorkerForm({ onAddWorker }: AddWorkerFormProps) {
     role: "",
     status: "pending",
   });
+  const [uploadedDocuments, setUploadedDocuments] = useState<WorkerDocument[]>([]);
+  const [currentDocumentType, setCurrentDocumentType] = useState<WorkerDocument["type"]>("id");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +47,7 @@ export default function AddWorkerForm({ onAddWorker }: AddWorkerFormProps) {
       id: Date.now().toString(),
       ...formData,
       lastSeen: "Just added",
+      documents: uploadedDocuments,
     };
 
     onAddWorker(newWorker);
@@ -46,6 +59,8 @@ export default function AddWorkerForm({ onAddWorker }: AddWorkerFormProps) {
       role: "",
       status: "pending",
     });
+    setUploadedDocuments([]);
+    setCurrentDocumentType("id");
     setIsOpen(false);
   };
 
@@ -159,6 +174,85 @@ export default function AddWorkerForm({ onAddWorker }: AddWorkerFormProps) {
                 </div>
               </div>
             </div>
+
+            {/* Document Upload Section */}
+            <div className="row">
+              <div className="col-12">
+                <div className="mb-3">
+                  <label className="form-label">Upload Documents</label>
+                  <div className="mb-3">
+                    <label className="form-label" htmlFor="document-type">
+                      Document Type
+                    </label>
+                    <select
+                      id="document-type"
+                      className="form-select"
+                      value={currentDocumentType}
+                      onChange={(e) =>
+                        setCurrentDocumentType(
+                          e.target.value as WorkerDocument["type"]
+                        )
+                      }
+                    >
+                      <option value="id">ID Document</option>
+                      <option value="certification">Certification</option>
+                      <option value="training">Training Record</option>
+                      <option value="medical">Medical Certificate</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <FileUpload
+                    onFileSelect={(file) => {
+                      const newDocument: WorkerDocument = {
+                        id: Date.now().toString(),
+                        name: file.name,
+                        type: currentDocumentType,
+                        file: file,
+                        uploadedAt: new Date().toISOString(),
+                      };
+                      setUploadedDocuments([...uploadedDocuments, newDocument]);
+                    }}
+                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    maxSize={10 * 1024 * 1024} // 10MB
+                    label="Upload Document"
+                  />
+                </div>
+
+                {/* Display uploaded documents */}
+                {uploadedDocuments.length > 0 && (
+                  <div className="mb-3">
+                    <label className="form-label">Uploaded Documents ({uploadedDocuments.length})</label>
+                    <div className="list-group">
+                      {uploadedDocuments.map((doc) => (
+                        <div
+                          key={doc.id}
+                          className="list-group-item d-flex align-items-center justify-content-between"
+                        >
+                          <div className="d-flex align-items-center">
+                            <span className="badge bg-primary me-2">
+                              {doc.type.toUpperCase()}
+                            </span>
+                            <span>{doc.name}</span>
+                          </div>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() =>
+                              setUploadedDocuments(
+                                uploadedDocuments.filter((d) => d.id !== doc.id)
+                              )
+                            }
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="btn-list">
               <button type="submit" className="btn btn-primary">
                 Add Worker

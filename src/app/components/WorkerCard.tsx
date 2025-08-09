@@ -2,6 +2,14 @@
 import { useState } from "react";
 import MinePass from "./MinePass";
 
+interface WorkerDocument {
+  id: string;
+  name: string;
+  type: "id" | "certification" | "training" | "medical" | "other";
+  file: File;
+  uploadedAt: string;
+}
+
 interface Worker {
   id: string;
   name: string;
@@ -9,6 +17,7 @@ interface Worker {
   status: "active" | "inactive" | "pending";
   role: string;
   lastSeen: string;
+  documents?: WorkerDocument[];
 }
 
 export default function WorkerCard({ worker }: { worker: Worker }) {
@@ -66,6 +75,18 @@ export default function WorkerCard({ worker }: { worker: Worker }) {
                     <small className="text-muted">Last Seen</small>
                     <div>{worker.lastSeen}</div>
                   </div>
+                  {worker.documents && worker.documents.length > 0 && (
+                    <div className="col-12 mt-3">
+                      <small className="text-muted">Documents ({worker.documents.length})</small>
+                      <div className="mt-2">
+                        {worker.documents.map((doc) => (
+                          <span key={doc.id} className="badge bg-light text-dark me-1 mb-1">
+                            {doc.type.toUpperCase()}: {doc.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

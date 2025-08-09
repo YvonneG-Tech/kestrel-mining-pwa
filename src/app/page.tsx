@@ -3,6 +3,14 @@ import { useState } from "react";
 import WorkerCard from "./components/WorkerCard";
 import AddWorkerForm from "./components/AddWorkerForm";
 
+interface WorkerDocument {
+  id: string;
+  name: string;
+  type: "id" | "certification" | "training" | "medical" | "other";
+  file: File;
+  uploadedAt: string;
+}
+
 interface Worker {
   id: string;
   name: string;
@@ -10,6 +18,7 @@ interface Worker {
   status: "active" | "inactive" | "pending";
   role: string;
   lastSeen: string;
+  documents?: WorkerDocument[];
 }
 
 // Initial sample data
