@@ -43,9 +43,11 @@ model Worker {
   lastSeen   DateTime?
   
   // Relations
-  documents     Document[]
-  scanHistory   ScanHistory[]
-  equipmentUsage EquipmentUsage[]
+  documents         Document[]
+  scanHistory       ScanHistory[]
+  equipmentUsage    EquipmentUsage[]
+  trainingEnrollments TrainingEnrollment[]
+  skills            WorkerSkill[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -133,7 +135,7 @@ model Contractor {
   emergencyRate   Float?
   
   // Skills and certifications
-  skills          String[]
+  skillTags       String[]
   certifications  ContractorCertification[]
   
   // Availability
@@ -143,8 +145,10 @@ model Contractor {
   maxHoursPerWeek Int?
   
   // Relations
-  assignments     ContractorAssignment[]
-  equipmentUsage  EquipmentUsage[]
+  assignments         ContractorAssignment[]
+  equipmentUsage      EquipmentUsage[]
+  trainingEnrollments TrainingEnrollment[]
+  skills              ContractorSkill[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -391,4 +395,390 @@ model EquipmentAssignment {
   updatedAt DateTime @updatedAt
 
   @@map("equipment_assignments")
+}
+
+// Training Programs
+model TrainingProgram {
+  id          String            @id @default(cuid())
+  name        String
+  description String?
+  category    TrainingCategory
+  provider    String?
+  duration    Int               // Duration in hours
+  
+  // Validity and renewal
+  validityPeriod   Int?          // Validity in months
+  isRecurring      Boolean       @default(false)
+  renewalRequired  Boolean       @default(false)
+  
+  // Requirements
+  prerequisites    String[]      // List of required skills or training
+  minExperience    Int?          // Minimum months of experience required
+  
+  // Content and delivery
+  deliveryMethod   DeliveryMethod @default(IN_PERSON)
+  materials        Json?         // Training materials, links, etc.
+  assessmentType   AssessmentType @default(PRACTICAL)
+  passingScore     Int?          // Minimum score to pass (percentage)
+  
+  // Cost and scheduling
+  cost            Float?
+  maxParticipants Int?
+  
+  // Relations
+  sessions        TrainingSession[]
+  enrollments     TrainingEnrollment[]
+  skills          TrainingSkill[]
+  requirements    TrainingRequirement[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("training_programs")
+}
+
+enum TrainingCategory {
+  SAFETY
+  TECHNICAL
+  COMPLIANCE
+  LEADERSHIP
+  EQUIPMENT_OPERATION
+  EMERGENCY_RESPONSE
+  ENVIRONMENTAL
+  QUALITY_ASSURANCE
+  SOFT_SKILLS
+  OTHER
+}
+
+enum DeliveryMethod {
+  IN_PERSON
+  ONLINE
+  HYBRID
+  ON_THE_JOB
+  SIMULATION
+}
+
+enum AssessmentType {
+  WRITTEN
+  PRACTICAL
+  OBSERVATION
+  COMBINATION
+  NONE
+}
+
+// Training Sessions (scheduled instances of programs)
+model TrainingSession {
+  id              String            @id @default(cuid())
+  trainingProgramId String
+  trainingProgram   TrainingProgram @relation(fields: [trainingProgramId], references: [id])
+  
+  // Session details
+  startDate       DateTime
+  endDate         DateTime
+  location        String?
+  instructor      String?
+  maxParticipants Int?
+  status          SessionStatus     @default(SCHEDULED)
+  
+  // Session specific info
+  notes           String?
+  materials       Json?
+  cost            Float?
+  
+  // Relations
+  attendances     TrainingAttendance[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("training_sessions")
+}
+
+enum SessionStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  POSTPONED
+}
+
+// Training Enrollments (who is enrolled in what program)
+model TrainingEnrollment {
+  id                String          @id @default(cuid())
+  trainingProgramId String
+  trainingProgram   TrainingProgram @relation(fields: [trainingProgramId], references: [id])
+  
+  // Participant details
+  participantType   ParticipantType
+  workerId          String?
+  worker            Worker?         @relation(fields: [workerId], references: [id])
+  contractorId      String?
+  contractor        Contractor?     @relation(fields: [contractorId], references: [id])
+  
+  // Enrollment details
+  enrolledAt        DateTime        @default(now())
+  status            EnrollmentStatus @default(ENROLLED)
+  priority          Priority        @default(MEDIUM)
+  deadline          DateTime?
+  
+  // Progress tracking
+  progressPercent   Int             @default(0)
+  startedAt         DateTime?
+  completedAt       DateTime?
+  
+  // Results
+  finalScore        Int?
+  passed            Boolean?
+  certificateIssued Boolean         @default(false)
+  notes             String?
+  
+  // Relations
+  attendances       TrainingAttendance[]
+  requirements      TrainingRequirement[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("training_enrollments")
+}
+
+enum ParticipantType {
+  EMPLOYEE
+  CONTRACTOR
+}
+
+enum EnrollmentStatus {
+  ENROLLED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+  ON_HOLD
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+// Training Attendance (per session)
+model TrainingAttendance {
+  id                    String            @id @default(cuid())
+  trainingSessionId     String
+  trainingSession       TrainingSession   @relation(fields: [trainingSessionId], references: [id])
+  trainingEnrollmentId  String
+  trainingEnrollment    TrainingEnrollment @relation(fields: [trainingEnrollmentId], references: [id])
+  
+  // Attendance details
+  attended              Boolean           @default(false)
+  arrivalTime           DateTime?
+  departureTime         DateTime?
+  hoursAttended         Float?
+  
+  // Assessment results
+  score                 Int?
+  passed                Boolean?
+  feedback              String?
+  
+  // Instructor notes
+  performance           Performance?
+  notes                 String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("training_attendances")
+}
+
+enum Performance {
+  EXCELLENT
+  GOOD
+  SATISFACTORY
+  NEEDS_IMPROVEMENT
+  POOR
+}
+
+// Skills Management
+model Skill {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  category    SkillCategory
+  level       SkillLevel  @default(BASIC)
+  
+  // Validation and certification
+  requiresCertification Boolean @default(false)
+  certificationAuthority String?
+  validityPeriod        Int?    // Months
+  
+  // Relations
+  workerSkills      WorkerSkill[]
+  contractorSkills  ContractorSkill[]
+  trainingSkills    TrainingSkill[]
+  jobRequirements   JobSkillRequirement[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("skills")
+}
+
+enum SkillCategory {
+  TECHNICAL
+  SAFETY
+  EQUIPMENT_OPERATION
+  LEADERSHIP
+  COMMUNICATION
+  PROBLEM_SOLVING
+  PHYSICAL
+  REGULATORY
+  OTHER
+}
+
+enum SkillLevel {
+  BASIC
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+// Worker Skills (many-to-many with proficiency tracking)
+model WorkerSkill {
+  id              String    @id @default(cuid())
+  workerId        String
+  worker          Worker    @relation(fields: [workerId], references: [id])
+  skillId         String
+  skill           Skill     @relation(fields: [skillId], references: [id])
+  
+  // Proficiency details
+  level           SkillLevel
+  experienceYears Float?
+  lastUsed        DateTime?
+  verified        Boolean   @default(false)
+  verifiedBy      String?
+  verifiedAt      DateTime?
+  
+  // Certification info
+  certified       Boolean   @default(false)
+  certificationDate DateTime?
+  expiryDate      DateTime?
+  certificationNumber String?
+  
+  notes           String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([workerId, skillId])
+  @@map("worker_skills")
+}
+
+// Contractor Skills (similar to WorkerSkill)
+model ContractorSkill {
+  id              String     @id @default(cuid())
+  contractorId    String
+  contractor      Contractor @relation(fields: [contractorId], references: [id])
+  skillId         String
+  skill           Skill      @relation(fields: [skillId], references: [id])
+  
+  // Proficiency details
+  level           SkillLevel
+  experienceYears Float?
+  lastUsed        DateTime?
+  verified        Boolean    @default(false)
+  verifiedBy      String?
+  verifiedAt      DateTime?
+  
+  // Certification info
+  certified       Boolean    @default(false)
+  certificationDate DateTime?
+  expiryDate      DateTime?
+  certificationNumber String?
+  
+  notes           String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([contractorId, skillId])
+  @@map("contractor_skills")
+}
+
+// Training Program Skills (what skills does a training program provide)
+model TrainingSkill {
+  id                String          @id @default(cuid())
+  trainingProgramId String
+  trainingProgram   TrainingProgram @relation(fields: [trainingProgramId], references: [id])
+  skillId           String
+  skill             Skill           @relation(fields: [skillId], references: [id])
+  
+  // What level this training provides
+  levelProvided     SkillLevel
+  isRequired        Boolean         @default(true) // Is this skill required or optional
+  
+  @@unique([trainingProgramId, skillId])
+  @@map("training_skills")
+}
+
+// Job/Position Skill Requirements
+model JobSkillRequirement {
+  id            String     @id @default(cuid())
+  jobTitle      String
+  department    String?
+  skillId       String
+  skill         Skill      @relation(fields: [skillId], references: [id])
+  
+  // Requirement details
+  requiredLevel SkillLevel
+  isOptional    Boolean    @default(false)
+  priority      Priority   @default(MEDIUM)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("job_skill_requirements")
+}
+
+// Training Requirements (compliance tracking)
+model TrainingRequirement {
+  id                    String              @id @default(cuid())
+  name                  String
+  description           String?
+  type                  RequirementType
+  
+  // Applicability
+  appliesToAllWorkers   Boolean             @default(false)
+  appliesToDepartments  String[]            // List of departments
+  appliesToRoles        String[]            // List of job roles
+  
+  // Training program linkage
+  trainingProgramId     String?
+  trainingProgram       TrainingProgram?    @relation(fields: [trainingProgramId], references: [id])
+  
+  // Timing and recurrence
+  deadline              DateTime?
+  isRecurring           Boolean             @default(false)
+  recurrenceMonths      Int?                // How often to repeat
+  gracePeridDays        Int?                // Grace period after expiry
+  
+  // Status tracking
+  isActive              Boolean             @default(true)
+  
+  // Relations
+  enrollments           TrainingEnrollment[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("training_requirements")
+}
+
+enum RequirementType {
+  MANDATORY
+  RECOMMENDED
+  ROLE_SPECIFIC
+  REGULATORY
+  SAFETY_CRITICAL
 }

@@ -340,6 +340,207 @@ class ApiClient {
       body: JSON.stringify(data),
     });
   }
+
+  // Training Programs API
+  async getTrainingPrograms(filters?: {
+    category?: string;
+    search?: string;
+    provider?: string;
+    deliveryMethod?: string;
+  }) {
+    const params = new URLSearchParams();
+    if (filters?.category) params.append('category', filters.category);
+    if (filters?.search) params.append('search', filters.search);
+    if (filters?.provider) params.append('provider', filters.provider);
+    if (filters?.deliveryMethod) params.append('deliveryMethod', filters.deliveryMethod);
+    
+    const query = params.toString() ? `?${params}` : '';
+    return this.request(`/training/programs${query}`);
+  }
+
+  async getTrainingProgram(id: string) {
+    return this.request(`/training/programs/${id}`);
+  }
+
+  async createTrainingProgram(data: {
+    name: string;
+    description?: string;
+    category: string;
+    provider?: string;
+    duration: number;
+    validityPeriod?: number;
+    isRecurring?: boolean;
+    renewalRequired?: boolean;
+    prerequisites?: string[];
+    minExperience?: number;
+    deliveryMethod?: string;
+    materials?: Record<string, unknown>;
+    assessmentType?: string;
+    passingScore?: number;
+    cost?: number;
+    maxParticipants?: number;
+  }) {
+    return this.request('/training/programs', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateTrainingProgram(id: string, data: Partial<{
+    name: string;
+    description: string;
+    category: string;
+    provider: string;
+    duration: number;
+    validityPeriod: number;
+    isRecurring: boolean;
+    renewalRequired: boolean;
+    prerequisites: string[];
+    minExperience: number;
+    deliveryMethod: string;
+    materials: Record<string, unknown>;
+    assessmentType: string;
+    passingScore: number;
+    cost: number;
+    maxParticipants: number;
+  }>) {
+    return this.request(`/training/programs/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteTrainingProgram(id: string) {
+    return this.request(`/training/programs/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Training Enrollments API
+  async getTrainingEnrollments(filters?: {
+    programId?: string;
+    workerId?: string;
+    contractorId?: string;
+    status?: string;
+    priority?: string;
+  }) {
+    const params = new URLSearchParams();
+    if (filters?.programId) params.append('programId', filters.programId);
+    if (filters?.workerId) params.append('workerId', filters.workerId);
+    if (filters?.contractorId) params.append('contractorId', filters.contractorId);
+    if (filters?.status) params.append('status', filters.status);
+    if (filters?.priority) params.append('priority', filters.priority);
+    
+    const query = params.toString() ? `?${params}` : '';
+    return this.request(`/training/enrollments${query}`);
+  }
+
+  async createTrainingEnrollment(data: {
+    trainingProgramId: string;
+    participantType: 'EMPLOYEE' | 'CONTRACTOR';
+    workerId?: string;
+    contractorId?: string;
+    status?: string;
+    priority?: string;
+    deadline?: string;
+    progressPercent?: number;
+    startedAt?: string;
+    completedAt?: string;
+    finalScore?: number;
+    passed?: boolean;
+    certificateIssued?: boolean;
+    notes?: string;
+  }) {
+    return this.request('/training/enrollments', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Skills API
+  async getSkills(filters?: {
+    category?: string;
+    level?: string;
+    search?: string;
+    requiresCertification?: boolean;
+  }) {
+    const params = new URLSearchParams();
+    if (filters?.category) params.append('category', filters.category);
+    if (filters?.level) params.append('level', filters.level);
+    if (filters?.search) params.append('search', filters.search);
+    if (filters?.requiresCertification !== undefined) params.append('requiresCertification', filters.requiresCertification.toString());
+    
+    const query = params.toString() ? `?${params}` : '';
+    return this.request(`/skills${query}`);
+  }
+
+  async createSkill(data: {
+    name: string;
+    description?: string;
+    category: string;
+    level?: string;
+    requiresCertification?: boolean;
+    certificationAuthority?: string;
+    validityPeriod?: number;
+  }) {
+    return this.request('/skills', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Worker Skills API
+  async getWorkerSkills(filters?: {
+    workerId?: string;
+    skillId?: string;
+    verified?: boolean;
+    certified?: boolean;
+  }) {
+    const params = new URLSearchParams();
+    if (filters?.workerId) params.append('workerId', filters.workerId);
+    if (filters?.skillId) params.append('skillId', filters.skillId);
+    if (filters?.verified !== undefined) params.append('verified', filters.verified.toString());
+    if (filters?.certified !== undefined) params.append('certified', filters.certified.toString());
+    
+    const query = params.toString() ? `?${params}` : '';
+    return this.request(`/skills/worker${query}`);
+  }
+
+  async createWorkerSkill(data: {
+    workerId: string;
+    skillId: string;
+    level: string;
+    experienceYears?: number;
+    lastUsed?: string;
+    verified?: boolean;
+    verifiedBy?: string;
+    verifiedAt?: string;
+    certified?: boolean;
+    certificationDate?: string;
+    expiryDate?: string;
+    certificationNumber?: string;
+    notes?: string;
+  }) {
+    return this.request('/skills/worker', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Skills Matrix API
+  async getSkillsMatrix(filters?: {
+    department?: string;
+    role?: string;
+    skillCategory?: string;
+  }) {
+    const params = new URLSearchParams();
+    if (filters?.department) params.append('department', filters.department);
+    if (filters?.role) params.append('role', filters.role);
+    if (filters?.skillCategory) params.append('skillCategory', filters.skillCategory);
+    
+    const query = params.toString() ? `?${params}` : '';
+    return this.request(`/skills/matrix${query}`);
+  }
 }
 
 export const apiClient = new ApiClient();
