@@ -32,10 +32,8 @@ export default function MinePass({ worker, onClose }: MinePassProps) {
     }[worker.status] || "bg-secondary";
 
   return (
-    <div className="modal modal-blur fade show d-block">
-      {/* Light backdrop instead of dark */}
-      <div
-        className="modal-backdrop fade show opacity-70 bg-light"
+    <div className="modal modal-blur show d-block">
+        <div
         onClick={onClose}
       ></div>
       <div className="modal-dialog modal-sm modal-dialog-centered">
