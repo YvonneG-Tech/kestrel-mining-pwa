@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  SUPERVISOR
+  USER
+}
+
+// Worker model
+model Worker {
+  id         String       @id @default(cuid())
+  name       String
+  employeeId String       @unique
+  email      String?
+  phone      String?
+  status     WorkerStatus @default(PENDING)
+  role       String
+  department String?
+  startDate  DateTime?
+  endDate    DateTime?
+  lastSeen   DateTime?
+  
+  // Relations
+  documents   Document[]
+  scanHistory ScanHistory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("workers")
+}
+
+enum WorkerStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+  SUSPENDED
+}
+
+// Document model
+model Document {
+  id          String         @id @default(cuid())
+  name        String
+  type        DocumentType
+  status      DocumentStatus @default(VALID)
+  description String?
+  fileUrl     String?
+  fileName    String?
+  fileSize    Int?
+  uploadedAt  DateTime       @default(now())
+  expiryDate  DateTime?
+  
+  // Relations
+  workerId String?
+  worker   Worker? @relation(fields: [workerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("documents")
+}
+
+enum DocumentType {
+  ID
+  CERTIFICATION
+  TRAINING
+  MEDICAL
+  OTHER
+}
+
+enum DocumentStatus {
+  VALID
+  EXPIRING
+  EXPIRED
+}
+
+// Scan History model for QR scanner
+model ScanHistory {
+  id        String    @id @default(cuid())
+  workerId  String
+  worker    Worker    @relation(fields: [workerId], references: [id])
+  status    ScanStatus
+  location  String?
+  scannedAt DateTime  @default(now())
+  qrData    Json?
+
+  @@map("scan_history")
+}
+
+enum ScanStatus {
+  SUCCESS
+  ERROR
+  NOT_FOUND
+}

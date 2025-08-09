@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "@tabler/core/dist/css/tabler.min.css";
 import "./globals.css";
 import Navigation from "./components/Navigation";
+import Providers from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,10 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="page">
-          <Navigation />
-          {children}
-        </div>
+        <Providers>
+          <div className="page">
+            <Navigation />
+            {children}
+          </div>
+        </Providers>
       </body>
     </html>
   );
