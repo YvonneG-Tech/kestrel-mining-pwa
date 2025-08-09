@@ -1,3 +1,41 @@
+import WorkerCard from "./components/WorkerCard";
+
+// Sample data (later this will come from database)
+const sampleWorkers = [
+  {
+    id: "1",
+    name: "John Smith",
+    employeeId: "EMP001",
+    status: "active" as const,
+    role: "Site Supervisor",
+    lastSeen: "2 hours ago",
+  },
+  {
+    id: "2",
+    name: "Sarah Johnson",
+    employeeId: "EMP002",
+    status: "active" as const,
+    role: "Safety Officer",
+    lastSeen: "30 minutes ago",
+  },
+  {
+    id: "3",
+    name: "Mike Wilson",
+    employeeId: "EMP003",
+    status: "pending" as const,
+    role: "Equipment Operator",
+    lastSeen: "1 day ago",
+  },
+  {
+    id: "4",
+    name: "Lisa Chen",
+    employeeId: "EMP004",
+    status: "inactive" as const,
+    role: "Training Coordinator",
+    lastSeen: "3 days ago",
+  },
+];
+
 export default function Home() {
   return (
     <div className="page-wrapper">
@@ -11,8 +49,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Test Card Component */}
-        <div className="row row-deck row-cards">
+        {/* System Status Card */}
+        <div className="row row-deck row-cards mb-4">
           <div className="col-12">
             <div className="card">
               <div className="card-header">
@@ -49,12 +87,24 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Workers Section */}
+        <div className="row row-deck row-cards">
+          <div className="col-12">
+            <div className="card">
+              <div className="card-header">
+                <h3 className="card-title">Recent Workers</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="row row-deck row-cards">
+          {sampleWorkers.map((worker) => (
+            <WorkerCard key={worker.id} worker={worker} />
+          ))}
+        </div>
       </div>
     </div>
   );
 }
-
-export const metadata = {
-  title: "Kestrel Mining - Workforce Management",
-  description: "Mining workforce compliance and training management",
-};
