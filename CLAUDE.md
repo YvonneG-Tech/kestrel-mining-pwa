@@ -38,6 +38,8 @@ This is a Next.js 15 PWA for mining workforce management called "Kestrel Mining.
 - `FileUpload.tsx` - Reusable drag-and-drop file upload component
 - `DocumentCard.tsx` - Individual document display with expiry tracking
 - `DocumentUpload.tsx` - Bulk document upload with metadata management
+- `WorkerVerification.tsx` - Real-time worker verification results with status checking
+- `ScanHistory.tsx` - Scan history logging with export functionality
 - `Navigation.tsx` - Top navigation bar with active route highlighting
 
 ### Data Interfaces
@@ -77,10 +79,12 @@ interface WorkerDocument {
 1. **Worker Management**: Add, view, and manage mining workforce with search and filtering
 2. **Document Management**: Upload, categorize, and track worker documents with expiry monitoring
 3. **QR Code Passes**: Generate scannable mine passes for worker verification
-4. **Status Tracking**: Real-time worker status (active/pending/inactive)
-5. **File Upload System**: Drag-and-drop file uploads with validation and metadata
-6. **Navigation System**: Multi-page navigation (Dashboard, Workers, Documents)
-7. **Responsive Design**: Mobile-first approach for mining site usage
+4. **QR Scanner System**: Camera-based scanning for field verification with offline support
+5. **Status Tracking**: Real-time worker status (active/pending/inactive)
+6. **File Upload System**: Drag-and-drop file uploads with validation and metadata
+7. **Navigation System**: Multi-page navigation (Dashboard, Workers, Documents, Scanner)
+8. **Offline Capability**: LocalStorage persistence and offline scanning functionality
+9. **Responsive Design**: Mobile-first approach for mining site usage
 
 ### Document Features
 - **Document Types**: ID, Certification, Training, Medical, Other
@@ -90,10 +94,23 @@ interface WorkerDocument {
 - **Worker Integration**: Link documents to specific workers
 - **Search & Filter**: By document type, status, worker, and content
 
+### QR Scanner Features
+- **Camera Integration**: Real-time QR code scanning using device camera
+- **Worker Verification**: Instant verification against worker database
+- **Status Validation**: Checks worker status and document expiry
+- **Offline Support**: LocalStorage persistence for offline operations
+- **Scan History**: Complete audit trail with export functionality
+- **Access Control**: Recommendations based on worker status
+- **Location Tracking**: Site entry/exit logging capability
+- **Error Handling**: Invalid QR code detection and user guidance
+
 ## Development Notes
 
 - **Path Alias**: `@/*` maps to `./src/*`
 - **ESLint Config**: Uses Next.js recommended rules with TypeScript support
+- **QR Scanner Library**: Uses `qr-scanner` package for camera-based scanning
+- **Offline Storage**: LocalStorage for scan history and offline data persistence
+- **Camera Permissions**: Handles camera access with proper error messaging
 - **No Backend**: Currently a frontend-only application with sample data
 - **PWA Ready**: Designed as PWA for offline mining site usage (service worker not yet implemented)
 

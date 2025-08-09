@@ -9,6 +9,7 @@ export default function Navigation() {
     { href: "/", label: "Dashboard", icon: "dashboard" },
     { href: "/workers", label: "Workers", icon: "users" },
     { href: "/documents", label: "Documents", icon: "files" },
+    { href: "/scanner", label: "Scanner", icon: "qr" },
   ];
 
   return (
@@ -104,6 +105,26 @@ export default function Navigation() {
                       <path d="M9 9l1 0" />
                       <path d="M9 13l6 0" />
                       <path d="M9 17l6 0" />
+                    </svg>
+                  )}
+                  {item.icon === "qr" && (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="icon"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      strokeWidth="2"
+                      stroke="currentColor"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <rect x="4" y="4" width="6" height="6" rx="1" />
+                      <rect x="4" y="14" width="6" height="6" rx="1" />
+                      <rect x="14" y="4" width="6" height="6" rx="1" />
+                      <rect x="14" y="14" width="6" height="6" rx="1" />
                     </svg>
                   )}
                 </span>
