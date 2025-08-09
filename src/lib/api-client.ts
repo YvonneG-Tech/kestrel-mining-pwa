@@ -610,6 +610,111 @@ class ApiClient {
     const query = params.toString() ? `?${params}` : '';
     return this.request(`/integrations/gallagher/events${query}`);
   }
+
+  // AI/ML APIs
+  async getMaintenancePredictions(equipmentId?: string) {
+    const params = new URLSearchParams();
+    if (equipmentId) params.append('equipmentId', equipmentId);
+    
+    const query = params.toString() ? `?${params}` : '';
+    return this.request(`/ai/maintenance/predictions${query}`);
+  }
+
+  async initializePredictiveMaintenanceEngine() {
+    return this.request('/ai/maintenance/predictions', {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'initialize',
+      }),
+    });
+  }
+
+  async retrainMaintenanceModels() {
+    return this.request('/ai/maintenance/predictions', {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'retrain',
+      }),
+    });
+  }
+
+  async predictEquipmentMaintenance(equipmentId: string) {
+    return this.request('/ai/maintenance/predictions', {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'predict',
+        equipmentId,
+      }),
+    });
+  }
+
+  // Workforce Optimization AI APIs
+  async getWorkforceMetrics() {
+    return this.request('/ai/workforce/optimization?action=current-metrics');
+  }
+
+  async predictWorkforceNeeds(options: {
+    timeframe: 'DAILY' | 'WEEKLY' | 'MONTHLY';
+    seasonality?: boolean;
+    weatherConditions?: 'GOOD' | 'POOR' | 'EXTREME';
+  }) {
+    const params = new URLSearchParams();
+    params.append('action', 'predict-needs');
+    params.append('timeframe', options.timeframe);
+    if (options.seasonality) params.append('seasonality', 'true');
+    if (options.weatherConditions) params.append('weather', options.weatherConditions);
+    
+    return this.request(`/ai/workforce/optimization?${params}`);
+  }
+
+  async optimizeTaskAssignments(tasks: Array<{
+    id: string;
+    title: string;
+    description?: string;
+    priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+    estimatedHours: number;
+    requiredSkills: string[];
+    preferredExperience: number;
+    location?: string;
+    equipmentRequired?: string[];
+    deadline?: string;
+    shiftPreference?: 'DAY' | 'NIGHT' | 'ANY';
+    minWorkers: number;
+    maxWorkers: number;
+    costBudget?: number;
+  }>) {
+    return this.request('/ai/workforce/optimization', {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'optimize-assignments',
+        tasks,
+      }),
+    });
+  }
+
+  async optimizeShiftSchedules(constraints: {
+    shiftLength?: number;
+    maxConsecutiveDays?: number;
+    minRestHours?: number;
+    coverage24h?: boolean;
+  } = {}) {
+    return this.request('/ai/workforce/optimization', {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'optimize-schedules',
+        constraints,
+      }),
+    });
+  }
+
+  async initializeWorkforceOptimizationEngine() {
+    return this.request('/ai/workforce/optimization', {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'initialize',
+      }),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();
