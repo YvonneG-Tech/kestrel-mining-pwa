@@ -80,14 +80,14 @@ export default function AnalyticsChart({ type, data, title, height = 300 }: Anal
     chartData.datasets.forEach((dataset, datasetIndex) => {
       const colors = Array.isArray(dataset.backgroundColor) 
         ? dataset.backgroundColor 
-        : [dataset.backgroundColor || '#007bff'];
+        : [dataset.backgroundColor || '#004d71'];
       
       dataset.data.forEach((value, index) => {
         const barHeight = (value / maxValue) * chartHeight;
         const x = padding + (index * (barWidth + barSpacing)) + (datasetIndex * barWidth / chartData.datasets.length);
         const y = height - padding - barHeight;
         
-        ctx.fillStyle = colors[index % colors.length] || '#007bff';
+        ctx.fillStyle = colors[index % colors.length] || '#004d71';
         ctx.fillRect(x, y, barWidth / chartData.datasets.length, barHeight);
         
         // Draw value labels
@@ -140,7 +140,7 @@ export default function AnalyticsChart({ type, data, title, height = 300 }: Anal
 
     // Draw lines
     chartData.datasets.forEach((dataset) => {
-      ctx.strokeStyle = dataset.borderColor || '#007bff';
+      ctx.strokeStyle = dataset.borderColor || '#004d71';
       ctx.lineWidth = dataset.borderWidth || 2;
       ctx.fillStyle = dataset.backgroundColor || 'rgba(0, 123, 255, 0.1)';
       
@@ -165,7 +165,7 @@ export default function AnalyticsChart({ type, data, title, height = 300 }: Anal
       ctx.stroke();
 
       // Draw points
-      ctx.fillStyle = dataset.borderColor || '#007bff';
+      ctx.fillStyle = dataset.borderColor || '#004d71';
       dataset.data.forEach((value, index) => {
         const x = padding + (index * chartWidth / (dataset.data.length - 1));
         const y = height - padding - ((value - minValue) / valueRange * chartHeight);
@@ -198,7 +198,7 @@ export default function AnalyticsChart({ type, data, title, height = 300 }: Anal
 
     const colors = Array.isArray(chartData.datasets[0].backgroundColor)
       ? chartData.datasets[0].backgroundColor
-      : ['#007bff', '#28a745', '#ffc107', '#dc3545', '#17a2b8'];
+      : ['#004d71', '#00833e', '#ffd100', '#29b7ea', '#d8dfe3', '#484848'];
 
     chartData.datasets[0].data.forEach((value, index) => {
       const sliceAngle = (value / total) * 2 * Math.PI;
@@ -247,7 +247,7 @@ export default function AnalyticsChart({ type, data, title, height = 300 }: Anal
     if (type === 'doughnut' || type === 'pie') {
       const colors = Array.isArray(data.datasets[0].backgroundColor)
         ? data.datasets[0].backgroundColor
-        : ['#007bff', '#28a745', '#ffc107', '#dc3545', '#17a2b8'];
+        : ['#004d71', '#00833e', '#ffd100', '#29b7ea', '#d8dfe3', '#484848'];
 
       return data.labels.map((label, index) => (
         <div key={index} className="d-flex align-items-center me-3 mb-1">

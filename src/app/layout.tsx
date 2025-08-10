@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@tabler/core/dist/css/tabler.min.css";
 import "./globals.css";
+import "./styles/kestrel-theme.css";
 import Navigation from "./components/Navigation";
 import Providers from "./providers";
 import PWAInstall from "./components/PWAInstall";
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   title: "Kestrel Mining - Workforce Management",
   description: "Mining workforce compliance and training management",
   manifest: "/manifest.json",
-  themeColor: "#007bff",
+  themeColor: "#004d71",
   viewport: {
     width: "device-width",
     initialScale: 1,

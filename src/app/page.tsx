@@ -147,7 +147,7 @@ export default function Home() {
             <div className="col-auto ms-auto">
               <div className="btn-list">
                 <button
-                  className={`btn ${showAnalytics ? 'btn-primary' : 'btn-outline-primary'}`}
+                  className={`btn ${showAnalytics ? 'btn-kestrel-primary' : 'btn-outline-primary'}`}
                   onClick={() => setShowAnalytics(!showAnalytics)}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="icon me-1" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -156,7 +156,7 @@ export default function Home() {
                   {showAnalytics ? 'Hide Analytics' : 'Show Analytics'}
                 </button>
                 <button
-                  className={`btn ${showAuditTrail ? 'btn-secondary' : 'btn-outline-secondary'}`}
+                  className={`btn ${showAuditTrail ? 'btn-kestrel-accent' : 'btn-outline-secondary'}`}
                   onClick={() => setShowAuditTrail(!showAuditTrail)}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="icon me-1" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -181,24 +181,24 @@ export default function Home() {
                 <div className="row">
                   <div className="col-4">
                     <div className="text-center">
-                      <span className="badge bg-success me-1"></span>
-                      <span className="text-success">Active</span>
+                      <span className="badge bg-kestrel-forest me-1"></span>
+                      <span className="text-kestrel-forest">Active</span>
                       <div className="h1 m-0">{activeWorkers}</div>
                       <div className="text-muted">Active Workers</div>
                     </div>
                   </div>
                   <div className="col-4">
                     <div className="text-center">
-                      <span className="badge bg-warning me-1"></span>
-                      <span className="text-warning">Pending</span>
+                      <span className="badge bg-kestrel-yellow me-1"></span>
+                      <span className="text-kestrel-charcoal">Pending</span>
                       <div className="h1 m-0">{pendingWorkers}</div>
                       <div className="text-muted">Pending Workers</div>
                     </div>
                   </div>
                   <div className="col-4">
                     <div className="text-center">
-                      <span className="badge bg-danger me-1"></span>
-                      <span className="text-danger">Inactive</span>
+                      <span className="badge bg-kestrel-navy me-1"></span>
+                      <span className="text-kestrel-navy">Inactive</span>
                       <div className="h1 m-0">{inactiveWorkers}</div>
                       <div className="text-muted">Inactive Workers</div>
                     </div>

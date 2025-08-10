@@ -4,8 +4,8 @@
   "description": "Mining workforce compliance and training management system",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#007bff",
+  "background_color": "#004d71",
+  "theme_color": "#004d71",
   "orientation": "portrait-primary",
   "icons": [
     {
