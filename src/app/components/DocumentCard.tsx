@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { WorkerDocument } from "../documents/page";
 import DocumentViewer from "./DocumentViewer";
+import { useAuditLogger } from "../hooks/useAuditLogger";
 
 interface DocumentCardProps {
   document: WorkerDocument;
@@ -14,6 +15,7 @@ export default function DocumentCard({ document, onDelete, onSelect, isSelected 
   const [isExpanded, setIsExpanded] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showViewer, setShowViewer] = useState(false);
+  const { logDocumentAction } = useAuditLogger();
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return "0 Bytes";
@@ -120,6 +122,13 @@ export default function DocumentCard({ document, onDelete, onSelect, isSelected 
     link.click();
     window.document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    
+    // Log the download action
+    logDocumentAction("DOWNLOAD", document.id, document.name, {
+      fileSize: document.fileSize,
+      workerName: document.workerName,
+      documentType: document.type
+    });
   };
 
   return (
@@ -183,7 +192,13 @@ export default function DocumentCard({ document, onDelete, onSelect, isSelected 
             <div className="btn-list">
               <button
                 className="btn btn-sm btn-primary"
-                onClick={() => setShowViewer(true)}
+                onClick={() => {
+                  setShowViewer(true);
+                  logDocumentAction("VIEW", document.id, document.name, {
+                    workerName: document.workerName,
+                    documentType: document.type
+                  });
+                }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-sm me-1" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -275,6 +290,11 @@ export default function DocumentCard({ document, onDelete, onSelect, isSelected 
                   onClick={() => {
                     onDelete(document.id);
                     setShowDeleteConfirm(false);
+                    logDocumentAction("DELETE", document.id, document.name, {
+                      workerName: document.workerName,
+                      documentType: document.type,
+                      fileSize: document.fileSize
+                    });
                   }}
                 >
                   Delete Document

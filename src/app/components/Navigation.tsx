@@ -1,9 +1,13 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "./RoleBasedAccess";
+import { useState } from "react";
 
 export default function Navigation() {
   const pathname = usePathname();
+  const { user, logout, can } = useAuth();
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const navItems = [
     { href: "/", label: "Dashboard", icon: "dashboard" },
@@ -37,7 +41,7 @@ export default function Navigation() {
           </div>
         </Link>
 
-        <div className="navbar-nav">
+        <div className="navbar-nav flex-fill">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -132,6 +136,77 @@ export default function Navigation() {
               </Link>
             );
           })}
+          
+          {/* Global Search - only show on larger screens */}
+          <div className="d-none d-md-block">
+            <div className="nav-item">
+              <div className="nav-link p-0">
+                <div id="global-search-placeholder">
+                  {/* GlobalSearch will be mounted here by pages */}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* User Profile Menu */}
+          <div className="nav-item dropdown ms-auto">
+            <button
+              className="nav-link dropdown-toggle d-flex align-items-center"
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              aria-expanded={showUserMenu}
+            >
+              <span className="avatar avatar-sm me-2 bg-primary text-white">
+                {user?.name.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U'}
+              </span>
+              <div className="d-none d-md-block">
+                <div className="fw-medium">{user?.name || 'User'}</div>
+                <div className="text-muted small">{user?.role || 'User'}</div>
+              </div>
+            </button>
+            
+            {showUserMenu && (
+              <div className="dropdown-menu dropdown-menu-end show">
+                <div className="dropdown-item-text">
+                  <div className="fw-medium">{user?.name}</div>
+                  <div className="text-muted small">{user?.email}</div>
+                </div>
+                <div className="dropdown-divider"></div>
+                {can("system", "manage") && (
+                  <Link href="/admin/roles" className="dropdown-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="icon dropdown-item-icon" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                      <circle cx="12" cy="7" r="4"/>
+                      <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/>
+                    </svg>
+                    Role Management
+                  </Link>
+                )}
+                <Link href="/profile" className="dropdown-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="icon dropdown-item-icon" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <circle cx="12" cy="7" r="4"/>
+                    <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/>
+                  </svg>
+                  Profile Settings
+                </Link>
+                <div className="dropdown-divider"></div>
+                <button
+                  className="dropdown-item text-danger"
+                  onClick={() => {
+                    logout();
+                    setShowUserMenu(false);
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="icon dropdown-item-icon" width="20" height="20" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"/>
+                    <path d="M7 12h14l-3 -3m0 6l3 -3"/>
+                  </svg>
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

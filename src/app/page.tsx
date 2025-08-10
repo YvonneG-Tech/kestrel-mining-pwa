@@ -2,6 +2,10 @@
 import { useState } from "react";
 import WorkerCard from "./components/WorkerCard";
 import AddWorkerForm from "./components/AddWorkerForm";
+import DashboardAnalytics from "./components/DashboardAnalytics";
+import AuditTrail from "./components/AuditTrail";
+import { Protected } from "./components/RoleBasedAccess";
+import { WorkerDocument } from "./documents/page";
 
 interface WorkerDocument {
   id: string;
@@ -57,8 +61,70 @@ const initialWorkers: Worker[] = [
   },
 ];
 
+// Sample documents for analytics
+const sampleDocuments: WorkerDocument[] = [
+  {
+    id: "1",
+    name: "Mining Safety Certificate.pdf",
+    type: "certification",
+    file: new File([""], "Mining Safety Certificate.pdf", { type: "application/pdf" }),
+    uploadedAt: "2024-01-15T10:30:00Z",
+    expiryDate: "2025-01-15",
+    workerId: "1",
+    workerName: "John Smith",
+    status: "valid",
+    fileSize: 2048576,
+    description: "Annual mining safety certification",
+  },
+  {
+    id: "2", 
+    name: "Driver License.jpg",
+    type: "id",
+    file: new File([""], "Driver License.jpg", { type: "image/jpeg" }),
+    uploadedAt: "2024-02-01T14:20:00Z",
+    expiryDate: "2024-12-31",
+    workerId: "2",
+    workerName: "Sarah Johnson",
+    status: "expiring",
+    fileSize: 1536000,
+    description: "Heavy vehicle driver license",
+  },
+  {
+    id: "3",
+    name: "First Aid Training.pdf",
+    type: "training",
+    file: new File([""], "First Aid Training.pdf", { type: "application/pdf" }),
+    uploadedAt: "2024-01-20T09:15:00Z",
+    expiryDate: "2023-12-31",
+    workerId: "3",
+    workerName: "Mike Wilson",
+    status: "expired",
+    fileSize: 3145728,
+  },
+];
+
+// Sample scan history for analytics
+const sampleScanHistory = [
+  {
+    id: "scan-1",
+    timestamp: new Date().toISOString(),
+    worker: { name: "John Smith", employeeId: "EMP001" },
+    status: "success",
+    location: "Main Gate"
+  },
+  {
+    id: "scan-2", 
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    worker: { name: "Sarah Johnson", employeeId: "EMP002" },
+    status: "success",
+    location: "Equipment Yard"
+  }
+];
+
 export default function Home() {
   const [workers, setWorkers] = useState<Worker[]>(initialWorkers);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showAuditTrail, setShowAuditTrail] = useState(false);
 
   const handleAddWorker = (newWorker: Worker) => {
     setWorkers((prevWorkers) => [...prevWorkers, newWorker]);
@@ -77,6 +143,29 @@ export default function Home() {
             <div className="col">
               <h2 className="page-title">Kestrel Mining Dashboard</h2>
               <div className="page-subtitle">Workforce Management System</div>
+            </div>
+            <div className="col-auto ms-auto">
+              <div className="btn-list">
+                <button
+                  className={`btn ${showAnalytics ? 'btn-primary' : 'btn-outline-primary'}`}
+                  onClick={() => setShowAnalytics(!showAnalytics)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="icon me-1" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+                  </svg>
+                  {showAnalytics ? 'Hide Analytics' : 'Show Analytics'}
+                </button>
+                <button
+                  className={`btn ${showAuditTrail ? 'btn-secondary' : 'btn-outline-secondary'}`}
+                  onClick={() => setShowAuditTrail(!showAuditTrail)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="icon me-1" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="2"/>
+                    <path d="M22 12c-2 4-4 6-10 6s-8-2-10-6c2-4 4-6 10-6s8 2 10 6"/>
+                  </svg>
+                  {showAuditTrail ? 'Hide Audit Trail' : 'Show Audit Trail'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -120,10 +209,41 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Analytics Dashboard */}
+        {showAnalytics && (
+          <Protected resource="reports" action="read">
+            <div className="row row-deck row-cards mb-4">
+              <div className="col-12">
+                <DashboardAnalytics 
+                  workers={workers}
+                  documents={sampleDocuments}
+                  scanHistory={sampleScanHistory}
+                />
+              </div>
+            </div>
+          </Protected>
+        )}
+
+        {/* Audit Trail */}
+        {showAuditTrail && (
+          <Protected resource="audit" action="read">
+            <div className="row row-deck row-cards mb-4">
+              <div className="col-12">
+                <AuditTrail 
+                  maxEntries={25}
+                  autoRefresh={true}
+                />
+              </div>
+            </div>
+          </Protected>
+        )}
+
         {/* Add Worker Form */}
-        <div className="row row-deck row-cards">
-          <AddWorkerForm onAddWorker={handleAddWorker} />
-        </div>
+        <Protected resource="workers" action="create">
+          <div className="row row-deck row-cards">
+            <AddWorkerForm onAddWorker={handleAddWorker} />
+          </div>
+        </Protected>
 
         {/* Workers Section Header */}
         <div className="row row-deck row-cards">

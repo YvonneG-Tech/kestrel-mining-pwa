@@ -5,6 +5,9 @@ import DocumentUpload from "../components/DocumentUpload";
 import BulkActions from "../components/BulkActions";
 import ExportTools from "../components/ExportTools";
 import NotificationSystem from "../components/NotificationSystem";
+import GlobalSearch from "../components/GlobalSearch";
+import AdvancedFilters from "../components/AdvancedFilters";
+import { Protected } from "../components/RoleBasedAccess";
 
 export interface WorkerDocument {
   id: string;
@@ -175,6 +178,7 @@ export default function DocumentsPage() {
               <div className="page-subtitle">Manage worker documents and certifications</div>
             </div>
             <div className="col-auto ms-auto d-flex gap-2">
+              <GlobalSearch documents={documents} />
               <NotificationSystem documents={documents} />
               <ExportTools 
                 documents={documents} 
@@ -328,17 +332,85 @@ export default function DocumentsPage() {
                     </select>
                   </div>
                   <div className="col-md-2">
-                    <button 
-                      className="btn btn-outline-secondary w-100"
-                      onClick={() => {
+                    <AdvancedFilters
+                      filterGroups={[
+                        {
+                          id: "basic",
+                          label: "Basic Filters",
+                          icon: (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                              <path d="M5.5 5h13a1 1 0 0 1 .5 1.5L14 12L14 19L10 16L10 12L5.5 6.5a1 1 0 0 1 .5 -1.5"/>
+                            </svg>
+                          ),
+                          filters: [
+                            {
+                              id: "worker",
+                              label: "Worker",
+                              type: "select",
+                              value: "",
+                              options: [
+                                { label: "John Smith", value: "1" },
+                                { label: "Sarah Johnson", value: "2" },
+                                { label: "Mike Wilson", value: "3" },
+                                { label: "Lisa Chen", value: "4" }
+                              ]
+                            },
+                            {
+                              id: "size_range",
+                              label: "File Size (MB)",
+                              type: "range",
+                              value: { min: null, max: null },
+                              min: 0,
+                              max: 100
+                            }
+                          ]
+                        },
+                        {
+                          id: "dates",
+                          label: "Date Filters", 
+                          icon: (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                              <rect x="4" y="5" width="16" height="16" rx="2"/>
+                              <line x1="16" y1="3" x2="16" y2="7"/>
+                              <line x1="8" y1="3" x2="8" y2="7"/>
+                              <line x1="4" y1="11" x2="20" y2="11"/>
+                            </svg>
+                          ),
+                          filters: [
+                            {
+                              id: "upload_after",
+                              label: "Uploaded After",
+                              type: "date",
+                              value: ""
+                            },
+                            {
+                              id: "upload_before",
+                              label: "Uploaded Before", 
+                              type: "date",
+                              value: ""
+                            },
+                            {
+                              id: "expires_soon",
+                              label: "Expires within 30 days",
+                              type: "checkbox",
+                              value: false
+                            }
+                          ]
+                        }
+                      ]}
+                      onFiltersChange={(filters) => {
+                        // Apply advanced filters here
+                        console.log("Advanced filters:", filters);
+                      }}
+                      onReset={() => {
                         setSearchTerm("");
                         setTypeFilter("all");
                         setStatusFilter("all");
                         setSortBy("uploadedAt");
                       }}
-                    >
-                      Clear Filters
-                    </button>
+                    />
                   </div>
                 </div>
               </div>

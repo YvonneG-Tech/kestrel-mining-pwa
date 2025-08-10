@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import MinePass from "./MinePass";
+import WorkerProfile from "./WorkerProfile";
 
 interface WorkerDocument {
   id: string;
@@ -23,6 +24,7 @@ interface Worker {
 export default function WorkerCard({ worker }: { worker: Worker }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showMinePass, setShowMinePass] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   const statusClass = {
     active: "bg-success",
@@ -51,13 +53,24 @@ export default function WorkerCard({ worker }: { worker: Worker }) {
 
             <div className="btn-list">
               <button
+                className="btn btn-sm btn-primary"
+                onClick={() => setShowProfile(true)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-sm me-1" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/>
+                </svg>
+                Profile
+              </button>
+              <button
                 className="btn btn-sm btn-outline-primary"
                 onClick={() => setIsExpanded(!isExpanded)}
               >
                 {isExpanded ? "Hide" : "Details"}
               </button>
               <button
-                className="btn btn-sm btn-primary"
+                className="btn btn-sm btn-outline-secondary"
                 onClick={() => setShowMinePass(true)}
               >
                 QR Pass
@@ -96,6 +109,67 @@ export default function WorkerCard({ worker }: { worker: Worker }) {
 
       {showMinePass && (
         <MinePass worker={worker} onClose={() => setShowMinePass(false)} />
+      )}
+
+      {showProfile && (
+        <WorkerProfile 
+          worker={{
+            ...worker,
+            email: `${worker.name.toLowerCase().replace(' ', '.')}@kestrelmining.com`,
+            phone: "+61 4XX XXX XXX",
+            dateOfBirth: "1985-03-15",
+            address: {
+              street: "123 Mining Road",
+              city: "Perth",
+              state: "WA", 
+              postcode: "6000"
+            },
+            emergencyContact: {
+              name: "Emergency Contact",
+              relationship: "Spouse",
+              phone: "+61 4XX XXX XXX"
+            },
+            supervisor: "Site Manager",
+            payrollNumber: `PAY${worker.employeeId}`,
+            certifications: [
+              {
+                id: "cert-1",
+                name: "Mining Safety Induction",
+                issuer: "Department of Mines",
+                issuedDate: "2024-01-15",
+                expiryDate: "2025-01-15",
+                status: "valid" as const
+              },
+              {
+                id: "cert-2", 
+                name: "First Aid Certificate",
+                issuer: "Red Cross",
+                issuedDate: "2023-06-20",
+                expiryDate: "2024-06-20",
+                status: "expiring" as const
+              }
+            ],
+            lastActivity: [
+              {
+                type: "Site Entry",
+                description: "Entered main gate with valid access card",
+                timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                location: "Main Gate"
+              },
+              {
+                type: "Equipment Check",
+                description: "Completed pre-shift equipment inspection",
+                timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+                location: "Equipment Yard"
+              }
+            ],
+            medicalClearance: {
+              status: "valid" as const,
+              expiryDate: "2025-03-01"
+            }
+          }}
+          onClose={() => setShowProfile(false)}
+        />
       )}
     </>
   );

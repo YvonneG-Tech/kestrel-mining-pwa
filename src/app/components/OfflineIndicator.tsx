@@ -46,7 +46,7 @@ export default function OfflineIndicator() {
             </svg>
           </div>
           <div className="flex-fill">
-            <strong>You're offline</strong> - Some features may not work properly. Data will sync when connection is restored.
+            <strong>You&apos;re offline</strong> - Some features may not work properly. Data will sync when connection is restored.
           </div>
         </div>
       </div>
