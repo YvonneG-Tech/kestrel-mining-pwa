@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Fix badge text visibility - make text darker and bolder on all badges */
+.badge {
+  font-weight: 600 !important;
+}
+
+.badge.bg-danger {
+  color: #fff !important;
+  background-color: #d63939 !important;
+  font-weight: 700 !important;
+}
+
+.badge.bg-success {
+  color: #fff !important;
+  background-color: #2fb344 !important;
+  font-weight: 700 !important;
+}
+
+.badge.bg-warning {
+  color: #000 !important;
+  background-color: #f76707 !important;
+  font-weight: 700 !important;
+}
+
+.badge.bg-primary {
+  color: #fff !important;
+  background-color: #206bc4 !important;
+  font-weight: 700 !important;
+}
+
+.badge.bg-secondary {
+  color: #fff !important;
+  background-color: #626976 !important;
+  font-weight: 700 !important;
+}
+
+.badge.bg-info {
+  color: #fff !important;
+  background-color: #4299e1 !important;
+  font-weight: 700 !important;
+}
+
+/* Fix dropdown menu positioning to prevent cutoff */
+.navbar .dropdown-menu {
+  position: absolute !important;
+  z-index: 1050 !important;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Ensure dropdown opens within viewport */
+.navbar .dropdown-menu.dropdown-menu-end {
+  right: 0 !important;
+  left: auto !important;
+  transform: translateX(0) !important;
+}
+
+/* Add some spacing from viewport edge */
+@media (max-width: 768px) {
+  .navbar .dropdown-menu {
+    right: 10px !important;
+    max-width: calc(100vw - 20px);
+  }
+}
+
+/* Fix search modal overlay and text visibility */
+.modal.modal-blur .modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(4px);
+}
+
+/* Ensure modal content has proper background and text color */
+.modal .modal-content {
+  background-color: #fff !important;
+  color: #1e293b !important;
+}
+
+/* Fix search input text color */
+.modal .form-control {
+  color: #1e293b !important;
+  background-color: transparent !important;
+}
+
+.modal .form-control::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Fix search results text */
+.modal .list-group-item {
+  background-color: #fff !important;
+  color: #1e293b !important;
+}
+
+.modal .list-group-item.active {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+  border-color: #e2e8f0 !important;
+}
+
+.modal .text-muted {
+  color: #64748b !important;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .modal .modal-content {
+    background-color: #1a1a1a !important;
+    color: #e2e8f0 !important;
+  }
+  
+  .modal .form-control {
+    color: #e2e8f0 !important;
+  }
+  
+  .modal .list-group-item {
+    background-color: #1a1a1a !important;
+    color: #e2e8f0 !important;
+  }
+  
+  .modal .list-group-item.active {
+    background-color: #2d2d2d !important;
+    color: #e2e8f0 !important;
+    border-color: #404040 !important;
+  }
+  
+  .modal .text-muted {
+    color: #94a3b8 !important;
+  }
+}
