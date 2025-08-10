@@ -9,7 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.1",
+    "@mui/lab": "^7.0.0-beta.16",
+    "@mui/material": "^7.3.1",
     "@prisma/client": "^6.13.0",
+    "@reduxjs/toolkit": "^2.8.2",
     "@tabler/core": "^1.4.0",
     "@tabler/icons": "^3.34.1",
     "@tensorflow/tfjs": "^4.22.0",
@@ -19,7 +25,8 @@
     "qr-scanner": "^1.4.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-qr-code": "^2.0.18"
+    "react-qr-code": "^2.0.18",
+    "react-redux": "^9.2.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
