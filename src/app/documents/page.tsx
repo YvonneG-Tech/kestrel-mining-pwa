@@ -2,6 +2,9 @@
 import { useState } from "react";
 import DocumentCard from "../components/DocumentCard";
 import DocumentUpload from "../components/DocumentUpload";
+import BulkActions from "../components/BulkActions";
+import ExportTools from "../components/ExportTools";
+import NotificationSystem from "../components/NotificationSystem";
 
 export interface WorkerDocument {
   id: string;
@@ -79,6 +82,7 @@ export default function DocumentsPage() {
   const [typeFilter, setTypeFilter] = useState<"all" | WorkerDocument["type"]>("all");
   const [statusFilter, setStatusFilter] = useState<"all" | WorkerDocument["status"]>("all");
   const [sortBy, setSortBy] = useState<"name" | "uploadedAt" | "expiryDate">("uploadedAt");
+  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
 
   const handleAddDocuments = (newDocuments: WorkerDocument[]) => {
     setDocuments((prevDocs) => [...prevDocs, ...newDocuments]);
@@ -86,6 +90,48 @@ export default function DocumentsPage() {
 
   const handleDeleteDocument = (documentId: string) => {
     setDocuments((prevDocs) => prevDocs.filter(doc => doc.id !== documentId));
+    setSelectedDocuments(prev => prev.filter(id => id !== documentId));
+  };
+
+  const handleBulkDelete = (documentIds: string[]) => {
+    setDocuments((prevDocs) => prevDocs.filter(doc => !documentIds.includes(doc.id)));
+    setSelectedDocuments([]);
+  };
+
+  const handleBulkStatusUpdate = (documentIds: string[], status: WorkerDocument["status"]) => {
+    setDocuments((prevDocs) => 
+      prevDocs.map(doc => 
+        documentIds.includes(doc.id) ? { ...doc, status } : doc
+      )
+    );
+    setSelectedDocuments([]);
+  };
+
+  const handleBulkWorkerAssign = (documentIds: string[], workerId: string, workerName: string) => {
+    setDocuments((prevDocs) => 
+      prevDocs.map(doc => 
+        documentIds.includes(doc.id) 
+          ? { ...doc, workerId, workerName } 
+          : doc
+      )
+    );
+    setSelectedDocuments([]);
+  };
+
+  const handleDocumentSelect = (documentId: string, selected: boolean) => {
+    if (selected) {
+      setSelectedDocuments(prev => [...prev, documentId]);
+    } else {
+      setSelectedDocuments(prev => prev.filter(id => id !== documentId));
+    }
+  };
+
+  const handleSelectAll = (selected: boolean) => {
+    if (selected) {
+      setSelectedDocuments(filteredDocuments.map(doc => doc.id));
+    } else {
+      setSelectedDocuments([]);
+    }
   };
 
   const filteredDocuments = documents
@@ -127,6 +173,13 @@ export default function DocumentsPage() {
             <div className="col">
               <h2 className="page-title">Document Management</h2>
               <div className="page-subtitle">Manage worker documents and certifications</div>
+            </div>
+            <div className="col-auto ms-auto d-flex gap-2">
+              <NotificationSystem documents={documents} />
+              <ExportTools 
+                documents={documents} 
+                selectedDocuments={selectedDocuments}
+              />
             </div>
           </div>
         </div>
@@ -186,6 +239,16 @@ export default function DocumentsPage() {
             </div>
           </div>
         </div>
+
+        {/* Bulk Actions */}
+        <BulkActions
+          selectedDocuments={selectedDocuments}
+          documents={documents}
+          onBulkDelete={handleBulkDelete}
+          onBulkStatusUpdate={handleBulkStatusUpdate}
+          onBulkWorkerAssign={handleBulkWorkerAssign}
+          onClearSelection={() => setSelectedDocuments([])}
+        />
 
         {/* Upload Section */}
         <div className="row row-deck row-cards mb-4">
@@ -296,6 +359,25 @@ export default function DocumentsPage() {
                     </span>
                   )}
                 </h3>
+                <div className="card-actions">
+                  <label className="form-check form-check-inline">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      checked={filteredDocuments.length > 0 && selectedDocuments.length === filteredDocuments.length}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
+                      disabled={filteredDocuments.length === 0}
+                    />
+                    <span className="form-check-label">
+                      Select All
+                      {selectedDocuments.length > 0 && (
+                        <span className="text-muted ms-1">
+                          ({selectedDocuments.length} selected)
+                        </span>
+                      )}
+                    </span>
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -308,6 +390,8 @@ export default function DocumentsPage() {
                 key={document.id} 
                 document={document} 
                 onDelete={handleDeleteDocument}
+                onSelect={handleDocumentSelect}
+                isSelected={selectedDocuments.includes(document.id)}
               />
             ))
           ) : (

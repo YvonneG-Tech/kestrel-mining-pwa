@@ -1,15 +1,19 @@
 "use client";
 import { useState } from "react";
 import { WorkerDocument } from "../documents/page";
+import DocumentViewer from "./DocumentViewer";
 
 interface DocumentCardProps {
   document: WorkerDocument;
   onDelete: (documentId: string) => void;
+  onSelect?: (documentId: string, selected: boolean) => void;
+  isSelected?: boolean;
 }
 
-export default function DocumentCard({ document, onDelete }: DocumentCardProps) {
+export default function DocumentCard({ document, onDelete, onSelect, isSelected = false }: DocumentCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showViewer, setShowViewer] = useState(false);
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return "0 Bytes";
@@ -121,7 +125,22 @@ export default function DocumentCard({ document, onDelete }: DocumentCardProps) 
   return (
     <>
       <div className="col-md-6 col-lg-4">
-        <div className="card">
+        <div className={`card ${isSelected ? 'border-primary bg-light' : ''}`}>
+          {onSelect && (
+            <div className="card-header py-2">
+              <label className="form-check mb-0">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={(e) => onSelect(document.id, e.target.checked)}
+                />
+                <span className="form-check-label text-muted small">
+                  Select document
+                </span>
+              </label>
+            </div>
+          )}
           <div className="card-body">
             <div className="d-flex align-items-center mb-3">
               <span className="avatar avatar-md me-3 bg-primary text-white">
@@ -163,13 +182,24 @@ export default function DocumentCard({ document, onDelete }: DocumentCardProps) 
 
             <div className="btn-list">
               <button
+                className="btn btn-sm btn-primary"
+                onClick={() => setShowViewer(true)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-sm me-1" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <circle cx="12" cy="12" r="2"/>
+                  <path d="M22 12c-2 4-4 6-10 6s-8-2-10-6c2-4 4-6 10-6s8 2 10 6"/>
+                </svg>
+                Preview
+              </button>
+              <button
                 className="btn btn-sm btn-outline-primary"
                 onClick={() => setIsExpanded(!isExpanded)}
               >
                 {isExpanded ? "Hide" : "Details"}
               </button>
               <button
-                className="btn btn-sm btn-primary"
+                className="btn btn-sm btn-outline-secondary"
                 onClick={handleDownload}
               >
                 Download
@@ -253,6 +283,14 @@ export default function DocumentCard({ document, onDelete }: DocumentCardProps) 
             </div>
           </div>
         </div>
+      )}
+
+      {/* Document Viewer Modal */}
+      {showViewer && (
+        <DocumentViewer
+          document={document}
+          onClose={() => setShowViewer(false)}
+        />
       )}
     </>
   );
