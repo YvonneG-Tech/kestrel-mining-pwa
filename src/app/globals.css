@@ -1,67 +1,101 @@
-@import "tailwindcss";
+@import "@tabler/core/dist/css/tabler.min.css";
 
+/* Kestrel Brand Colors */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --kestrel-navy: #004d71;
+  --kestrel-forest: #00833e;
+  --kestrel-yellow: #ffd100;
+  --kestrel-sky-blue: #29b7ea;
+  --kestrel-charcoal: #484848;
+  --kestrel-stone: #d8dfe3;
+  
+  /* Override Tabler primary colors */
+  --tblr-primary: var(--kestrel-navy);
+  --tblr-primary-rgb: 0, 77, 113;
+  --tblr-success: var(--kestrel-forest);
+  --tblr-warning: var(--kestrel-yellow);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background-color: #f8fafc;
+  color: #333;
 }
 
-/* Fix badge text visibility - make text darker and bolder on all badges */
+/* Kestrel Brand Classes */
+.bg-kestrel-navy { background-color: var(--kestrel-navy) !important; color: white !important; }
+.bg-kestrel-forest { background-color: var(--kestrel-forest) !important; color: white !important; }
+.bg-kestrel-yellow { background-color: var(--kestrel-yellow) !important; color: var(--kestrel-charcoal) !important; }
+.text-kestrel-navy { color: var(--kestrel-navy) !important; }
+.text-kestrel-forest { color: var(--kestrel-forest) !important; }
+
+/* Fix Badges - Proper Contrast */
 .badge {
-  font-weight: 600 !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
 }
 
-.badge.bg-danger {
+.badge.bg-success { background-color: var(--kestrel-forest) !important; color: #fff !important; }
+.badge.bg-warning { background-color: var(--kestrel-yellow) !important; color: var(--kestrel-charcoal) !important; }
+.badge.bg-primary { background-color: var(--kestrel-navy) !important; color: #fff !important; }
+.badge.bg-danger { background-color: #dc3545 !important; color: #fff !important; }
+.badge.bg-info { background-color: var(--kestrel-sky-blue) !important; color: #fff !important; }
+.badge.bg-secondary { background-color: var(--kestrel-charcoal) !important; color: #fff !important; }
+
+/* EMERGENCY FIX - Clear Stuck Modals */
+.modal-backdrop,
+.modal-backdrop.show {
+  display: none !important;
+}
+
+body.modal-open {
+  overflow: auto !important;
+  padding-right: 0 !important;
+}
+
+.modal.show {
+  display: none !important;
+}
+
+/* Fix Dropdown Issues */
+.dropdown-menu {
+  position: absolute !important;
+  z-index: 1050 !important;
+  border: 1px solid rgba(0,0,0,0.15) !important;
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+}
+
+.dropdown-menu-end {
+  right: 0 !important;
+  left: auto !important;
+}
+
+/* Fix Navigation with Kestrel Colors */
+.navbar-brand {
+  color: var(--kestrel-navy) !important;
+  font-weight: bold;
+}
+
+.navbar-vertical {
+  background-color: var(--kestrel-navy) !important;
+}
+
+.navbar-vertical .nav-link {
+  color: rgba(255,255,255,0.8) !important;
+}
+
+.navbar-vertical .nav-link:hover,
+.navbar-vertical .nav-link.active {
+  background-color: rgba(255,255,255,0.1) !important;
   color: #fff !important;
-  background-color: #d63939 !important;
-  font-weight: 700 !important;
 }
 
-.badge.bg-success {
-  color: #fff !important;
-  background-color: #2fb344 !important;
-  font-weight: 700 !important;
-}
-
-.badge.bg-warning {
-  color: #000 !important;
-  background-color: #f76707 !important;
-  font-weight: 700 !important;
-}
-
-.badge.bg-primary {
-  color: #fff !important;
-  background-color: #206bc4 !important;
-  font-weight: 700 !important;
-}
-
-.badge.bg-secondary {
-  color: #fff !important;
-  background-color: #626976 !important;
-  font-weight: 700 !important;
-}
-
-.badge.bg-info {
-  color: #fff !important;
-  background-color: #4299e1 !important;
-  font-weight: 700 !important;
+/* Responsive Fixes */
+@media (max-width: 768px) {
+  .dropdown-menu {
+    position: fixed !important;
+    right: 10px !important;
+    left: 10px !important;
+    width: auto !important;
+  }
 }
